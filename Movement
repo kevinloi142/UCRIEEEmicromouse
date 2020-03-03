@@ -1,0 +1,53 @@
+int sensor = A0;
+int sensorReading = 0;
+int motorEN = 7;
+int MotorLogic1 = 6;
+int MotorLogic2 = 5;
+int MotorSpeed = 255;
+int Stopspeed = 0;
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  pinMode (sensorReading, INPUT);
+  pinMode (sensorReading, OUTPUT); 
+  pinMode(sensor,INPUT);
+  pinMode(motorEN, OUTPUT);
+  pinMode(MotorLogic1, OUTPUT);
+  pinMode(MotorLogic2, OUTPUT);
+  digitalWrite(motorEN, LOW);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  forward();
+  delay(500);
+  stopMouse();
+  reverse();
+  delay(500);
+  stopMouse();
+  delay(500);
+}
+
+void stopMouse(){
+  digitalWrite(MotorEN, LOW);
+  analogWrite(MotorLogic1, Stopspeed);
+  digitalWrite(MotorLogic2, LOW);
+  
+}
+
+void forward(){
+  digitalWrite(MotorEN, HIGH);  //Power
+  analogWrite(MotorLogic1, motorSpeed); //amt of power going to the motor 
+  digitalWrite(MotorLogic2, LOW); //Grounded 
+}
+
+void reverse(){
+  digitalWrite(MotorEN, LOW); //PWM connections
+  analogWrite(MotorLogic2, motorSpeed); //Writes as a 1 or 0
+  digitalWrite(MotorLogic1, HIGH);
+}
+
+void readIR(){
+  digitalWrite(sensor_left_power,HIGH);
+  sensor_left_reading = analogRead(sensor_left);
+}
