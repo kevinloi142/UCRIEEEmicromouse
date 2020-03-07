@@ -1,9 +1,13 @@
 int sensor = A0;
-int sensorReading = 0;
-int motorEN = 7;
+int sensorReading = A1;
+int sensor_left = A2;
+int sensor_forward = A3; 
+int sensor_right = A4;
+int sensor_left_reading, sensor_right_reading, sensor_left_power, sensor_right_power, sensor_forward_power, sensor_forward_reading;
+int MotorEN = 7;
 int MotorLogic1 = 6;
 int MotorLogic2 = 5;
-int MotorSpeed = 255;
+int motorSpeed = 255;
 int Stopspeed = 0;
 void setup() {
   // put your setup code here, to run once:
@@ -11,19 +15,30 @@ void setup() {
   pinMode (sensorReading, INPUT);
   pinMode (sensorReading, OUTPUT); 
   pinMode(sensor,INPUT);
-  pinMode(motorEN, OUTPUT);
+  pinMode(MotorEN, OUTPUT);
   pinMode(MotorLogic1, OUTPUT);
   pinMode(MotorLogic2, OUTPUT);
-  digitalWrite(motorEN, LOW);
+  digitalWrite(MotorEN, LOW);
 }
-
+//*************************************************
+//change the sensor values during testing
+//*************************************************
 void loop() {
   // put your main code here, to run repeatedly:
-  forward();
-  delay(500);
-  stopMouse();
-  reverse();
-  delay(500);
+  readIR();
+  if(sensor_forward_reading > 300 && sensor_left_reading > 300 && sensor_left_reading > 300){
+    reverse();
+    delay(500);
+  } else if(sensor_forward_reading > 300 && sensor_left_reading > 300 && sensor_left_reading < 300){
+    rotateLeft();
+    delay(500);
+  } else if(sensor_forward_reading < 300 && sensor_left_reading > 300 && sensor_left_reading > 300){
+    rotateRight();
+    delay(500);
+  } else {
+    forward();
+    delay(500);
+  }
   stopMouse();
   delay(500);
 }
@@ -35,6 +50,9 @@ void stopMouse(){
   
 }
 
+//add the irsensor reading to check how much to move and then use the stop mouse to stop the mouse
+//deter the irsensor with a reading between a range.
+//might of  been implemented in the if statement but still verify that the mouse won't run into the wall
 void forward(){
   digitalWrite(MotorEN, HIGH);  //Power
   analogWrite(MotorLogic1, motorSpeed); //amt of power going to the motor 
@@ -50,4 +68,29 @@ void reverse(){
 void readIR(){
   digitalWrite(sensor_left_power,HIGH);
   sensor_left_reading = analogRead(sensor_left);
+  digitalWrite(sensor_forward_power,HIGH);
+  sensor_forward_reading = analogRead(sensor_forward);
+  digitalWrite(sensor_right_power,HIGH);
+  sensor_right_reading = analogRead(sensor_right);
+}
+
+//******************************************
+// test rotate left and rotate right
+//******************************************
+void rotateRight(){
+   digitalWrite(MotorEN, LOW);
+   digitalWrite(MotorLogic1, HIGH);
+   analogWrite(MotorLogic2, motorSpeed);
+   digitalWrite(MotorEN, HIGH);
+   digitalWrite(MotorLogic1, LOW);
+   analogWrite(MotorLogic2, stopSpeed)l;
+}
+
+void rotateLeft(){
+   digitalWrite(MotorEN, HIGH);
+   digitalWrite(MotorLogic1, LOW);
+   analogWrite(MotorLogic2, motorSpeed);
+   digitalWrite(MotorEN, LOW);
+   digitalWrite(MotorLogic1, HIGH);
+   analogWrite(MotorLogic2, stopSpeed);
 }
